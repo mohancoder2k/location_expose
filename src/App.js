@@ -1,70 +1,49 @@
-import React from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { database, ref, set } from './firebase';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Checkup from './Checkup';
+import LocationsTable from './LocationsTable';
+import Login from './Login';
+import PrivateRoute from './PrivateRoute';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function App() {
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
-        // Create a unique key for each location entry
-        const locationRef = ref(database, 'locations/' + Date.now());
-
-        // Reverse geocode to get the address
-        const apiKey = '919b06ce98854854966d2dc1e6de36f1';
-        const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
-
-        axios.get(geocodeUrl)
-          .then((response) => {
-            if (response.data.status.code === 200) {
-              const components = response.data.results[0].components;
-              const street = components.road || '';
-              const area = components.suburb || components.neighbourhood || '';
-              const city = components.city || components.town || components.village || '';
-
-              // Store location and address in Firebase Realtime Database
-              set(locationRef, {
-                latitude,
-                longitude,
-                street,
-                area,
-                city,
-                timestamp: new Date().toISOString()
-              })
-              .then(() => {
-                Swal.fire({
-                  title: 'Success!',
-                  text: 'Yes you are healthy',
-                  icon: 'success',
-                  confirmButtonText: 'OK'
-                });
-              })
-              .catch((error) => {
-                console.error('Error adding location and address to Firebase Realtime Database: ', error);
-              });
-            } else {
-              console.error('Geocoding error: ', response.data.status.message);
-            }
-          })
-          .catch((error) => {
-            console.error('Error making geocoding request: ', error);
-          });
-      }, (error) => {
-        console.error('Error getting location: ', error);
-      });
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
-  };
+  const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
   return (
-    <div className="App">
-      <h1>Lets do an BP Checkup</h1>
-      <button onClick={handleGetLocation}>Check UP</button>
-    </div>
+    <Router>
+      <div className="App">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <Link className="navbar-brand" to="/">Health Checkup</Link>
+          <button className="navbar-toggler" type="button" onClick={handleNavCollapse}>
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarNav">
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/">Checkup</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Developer's Board</Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <div className="container mt-4">
+          <Routes>
+            <Route path="/" element={<Checkup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/locations" element={
+              <PrivateRoute>
+                <LocationsTable />
+              </PrivateRoute>
+            } />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 

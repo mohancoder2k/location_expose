@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Database Viewer</title>
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTJzRRNohHl-9RqyxdTzN1LV1bJExiNmk",
+            authDomain: "location-4e154.firebaseapp.com",
+            databaseURL: "https://location-4e154-default-rtdb.firebaseio.com/",
+            projectId: "location-4e154",
+            storageBucket: "location-4e154.appspot.com",
+            messagingSenderId: "359589036309",
+            appId: "1:359589036309:web:0c7b50999b28e31269e91c"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Reference to your database location
+        const dbRef = ref(database);
+
+        // Fetch data from Firebase
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            const table = document.getElementById('dataTable');
+            table.innerHTML = ''; // Clear existing data
+
+            // Create table headers
+            const headerRow = table.insertRow();
+            const headers = Object.keys(data[Object.keys(data)[0]]);
+            headers.forEach(header => {
+                const cell = document.createElement('th');
+                cell.textContent = header;
+                headerRow.appendChild(cell);
+            });
+
+            // Populate table with data
+            Object.values(data).forEach(item => {
+                const row = table.insertRow();
+                headers.forEach(header => {
+                    const cell = row.insertCell();
+                    cell.textContent = item[header];
+                });
+            });
+        }, {
+            onlyOnce: false // Set to true if you want to fetch the data only once
+        });
+    </script>
+</head>
+<body>
+    <h1>Firebase Database Viewer</h1>
+    <table border="1" id="dataTable">
+        <!-- Data will be inserted here -->
+    </table>
+</body>
+</html>

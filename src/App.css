@@ -1,11 +1,28 @@
-/* App.css */
 .App {
   text-align: center;
-  margin-top: 50px;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
 }
