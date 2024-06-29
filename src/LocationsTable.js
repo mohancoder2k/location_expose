@@ -24,6 +24,8 @@ function LocationsTable() {
           <thead className="thead-dark">
             <tr>
               <th>ID</th>
+              <th>Name</th>
+              <th>Age</th>
               <th>Latitude</th>
               <th>Longitude</th>
               <th>Street</th>
@@ -36,6 +38,8 @@ function LocationsTable() {
             {locations.map((location) => (
               <tr key={location.id}>
                 <td>{location.id}</td>
+                <td>{location.name}</td>
+                <td>{location.age}</td>
                 <td>{location.latitude}</td>
                 <td>{location.longitude}</td>
                 <td>{location.street}</td>

